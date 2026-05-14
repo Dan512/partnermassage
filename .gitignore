@@ -1,0 +1,41 @@
+# ============================================================
+# Secrets
+# ============================================================
+.env
+.env.*
+
+# ============================================================
+# Python dev tools — used to generate / convert assets locally;
+# the static site doesn't need any of this committed.
+# ============================================================
+scripts/
+tests/
+requirements.txt
+__pycache__/
+*.pyc
+*.pyo
+
+# ============================================================
+# Internal planning + design context (not for public)
+# ============================================================
+docs/
+.impeccable.md
+.claude/
+
+# ============================================================
+# Image backups — the PNG originals before WebP conversion.
+# Heavy and unnecessary; only the .webp files in images/ ship.
+# ============================================================
+images/_originals/
+
+# ============================================================
+# Editor / OS noise
+# ============================================================
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+desktop.ini
+*.swp
+*.swo
+*~

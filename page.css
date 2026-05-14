@@ -1,0 +1,149 @@
+/* Layout for standalone content pages (privacy, disclaimer, about).
+   styles.css provides palette + font variables; this file adds the
+   document-style typography these pages need without the screen-switcher
+   complexity of the main app. */
+
+body.page {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  line-height: 1.7;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+body.page .page-content {
+  flex: 1;
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 3rem 1.5rem 2rem;
+}
+
+body.page .back-link {
+  margin-bottom: 2rem;
+  font-size: 0.85rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+
+body.page .back-link a {
+  color: var(--accent);
+  text-decoration: none;
+  transition: opacity 0.2s ease;
+}
+
+body.page .back-link a:hover {
+  opacity: 0.7;
+}
+
+body.page h1 {
+  font-family: var(--serif);
+  font-weight: 400;
+  font-size: clamp(2rem, 5vw, 3rem);
+  letter-spacing: 0.02em;
+  margin: 0 0 1.5rem;
+  color: var(--text);
+}
+
+body.page h2 {
+  font-family: var(--serif);
+  font-weight: 400;
+  font-size: 1.5rem;
+  margin: 2.5rem 0 1rem;
+  color: var(--accent);
+  letter-spacing: 0.01em;
+}
+
+body.page p {
+  margin: 0 0 1.2rem;
+  font-weight: 300;
+  font-size: 1.05rem;
+  color: var(--text);
+}
+
+body.page .lede {
+  font-size: 1.15rem;
+  color: var(--text);
+  background: rgba(212, 165, 116, 0.05);
+  padding: 1rem 1.25rem;
+  border-radius: 6px;
+  margin: 0 0 2rem;
+}
+
+body.page ul {
+  margin: 0 0 1.5rem;
+  padding-left: 1.5rem;
+  color: var(--text);
+}
+
+body.page ul li {
+  margin-bottom: 0.5rem;
+  font-weight: 300;
+  font-size: 1.02rem;
+}
+
+body.page strong {
+  color: var(--accent);
+  font-weight: 500;
+}
+
+body.page em {
+  color: var(--text);
+  font-style: italic;
+}
+
+body.page a {
+  color: var(--accent);
+  text-decoration: underline;
+  text-decoration-color: rgba(212, 165, 116, 0.4);
+  text-underline-offset: 3px;
+  transition: text-decoration-color 0.2s ease;
+}
+
+body.page a:hover {
+  text-decoration-color: var(--accent);
+}
+
+/* Footer — also used by the start/complete screens in index.html */
+.site-footer {
+  text-align: center;
+  padding: 2rem 1.5rem;
+  color: var(--text-dim);
+  font-size: 0.85rem;
+  border-top: 1px solid rgba(240, 230, 214, 0.06);
+}
+
+.site-footer-links {
+  margin-bottom: 0.6rem;
+  letter-spacing: 0.05em;
+}
+
+.site-footer-links a {
+  color: var(--text-dim);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.site-footer-links a:hover {
+  color: var(--accent);
+}
+
+.site-footer-tag {
+  font-size: 0.78rem;
+  font-style: italic;
+  opacity: 0.7;
+  margin: 0;
+}
+
+@media (max-width: 640px) {
+  body.page .page-content {
+    padding: 2rem 1.25rem 1.5rem;
+  }
+  body.page h1 {
+    font-size: 2rem;
+  }
+}

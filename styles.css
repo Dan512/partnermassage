@@ -1,0 +1,1042 @@
+/* PartnerMassage — palette + typography. Warm, restrained, evening-light. */
+:root {
+  --bg: #1a1d24;
+  --bg-soft: #232730;
+  --text: #f0e6d6;
+  --text-dim: #9a8f7e;
+  --accent: #d4a574;
+  --accent-soft: rgba(212, 165, 116, 0.18);
+  --accent-glow: rgba(212, 165, 116, 0.45);
+
+  /* Distinctive native serifs: Iowan Old Style (macOS), Sitka Text (Windows),
+     fall back to Hoefler / Cambria / Georgia. Not in the AI reflex-font list. */
+  --serif: "Iowan Old Style", "Sitka Text", "Hoefler Text", "PT Serif", Cambria, Georgia, serif;
+
+  /* Native sans stack — no Inter, no web font load. */
+  --sans: -apple-system, BlinkMacSystemFont, "Segoe UI Variable", "Segoe UI",
+    Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  min-height: 100%;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  -webkit-font-smoothing: antialiased;
+  user-select: none;
+}
+
+/* Screen container ------------------------------------------------- */
+.screen {
+  position: fixed;
+  inset: 0;
+  display: none;
+  flex-direction: column;
+  opacity: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  transition: opacity 0.6s ease;
+}
+
+.screen.active {
+  display: flex;
+  opacity: 1;
+}
+
+#complete-screen {
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.start-inner {
+  max-width: 560px;
+  padding: 2rem;
+}
+
+/* Pre-start / in-progress state visibility helpers ----------------- */
+body.pre-start .pre-start-hidden { display: none !important; }
+body:not(.pre-start) .pre-start-only { display: none !important; }
+
+/* Soft variant: fade in on Begin (used for chrome elements that benefit
+   from a smooth reveal — instruction text, timer, controls). */
+.fade-in-on-begin {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 0.8s ease 0.5s, visibility 0s 0s;
+}
+body.pre-start .fade-in-on-begin {
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0s 0.3s;
+}
+
+/* Massage screen: SAME canvas pre-start and in-progress.
+   Pre-start shows brand overlay over the composition. In-progress
+   swaps to step counter + technique chrome + controls. */
+#massage-screen {
+  padding: 1.5rem 2rem;
+  background: var(--bg);
+}
+
+/* Brand & primary CTA ---------------------------------------------- */
+.brand {
+  font-family: var(--serif);
+  font-weight: 500;
+  font-size: clamp(2.5rem, 6vw, 4.5rem);
+  letter-spacing: -0.005em;
+  color: var(--text);
+  margin-bottom: 1rem;
+  line-height: 1;
+}
+
+.tagline {
+  font-size: 1.05rem;
+  line-height: 1.55;
+  color: var(--text-dim);
+  margin-bottom: 2rem;
+  font-weight: 300;
+  max-width: 38ch;
+}
+
+.primary-btn {
+  background: transparent;
+  color: var(--accent);
+  border: 1px solid var(--accent);
+  padding: 1rem 2.25rem;
+  font-family: var(--sans);
+  font-size: 0.95rem;
+  font-weight: 500;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.25s ease, color 0.25s ease;
+  border-radius: 2px;
+}
+
+.primary-btn:hover {
+  background: var(--accent);
+  color: var(--bg);
+}
+
+/* Top bar ---------------------------------------------------------- */
+.top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.78rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  padding-bottom: 1rem;
+  border-bottom: 1px solid rgba(240, 230, 214, 0.06);
+}
+
+body.pre-start .top-bar {
+  border-bottom-color: transparent;
+}
+
+.counter {
+  font-variant-numeric: tabular-nums;
+}
+
+.top-bar-right {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.gender-toggle,
+#settings-toggle {
+  background: transparent;
+  border: 1px solid rgba(212, 165, 116, 0.4);
+  color: var(--accent);
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 1rem;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--sans);
+  padding: 0;
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.gender-toggle:hover,
+#settings-toggle:hover {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+}
+
+.gender-toggle:active,
+#settings-toggle:active {
+  transform: scale(0.94);
+}
+
+/* Skin-tone cycle buttons in the top bar ----- */
+.tone-toggle {
+  background: transparent;
+  border: 1px solid rgba(212, 165, 116, 0.4);
+  color: var(--accent);
+  padding: 0.35rem 0.7rem;
+  border-radius: 999px;
+  cursor: pointer;
+  font-family: var(--sans);
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  text-transform: none;
+  white-space: nowrap;
+  transition: background 0.2s ease, border-color 0.2s ease, transform 0.1s ease;
+}
+
+.tone-toggle:hover {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+}
+
+.tone-toggle:active {
+  transform: scale(0.96);
+}
+
+@media (max-width: 640px) {
+  .tone-toggle {
+    /* On phones, abbreviate to save space — see refreshToneButtons() */
+    padding: 0.3rem 0.55rem;
+    font-size: 0.68rem;
+  }
+}
+
+/* Active main grid ------------------------------------------------- */
+.active-main {
+  flex: 1;
+  position: relative;
+  display: grid;
+  grid-template-columns: 1.3fr 2fr 1fr;
+  align-items: center;
+  gap: 2rem;
+  padding: 1rem 0;
+  min-height: 0;
+  /* Clip the pre-start scaled composition so it can't escape the dimmed
+     brand-overlay region on large screens. */
+  overflow: hidden;
+}
+
+/* Grid layout stays the same in both states — animating layout properties
+   like `grid-template-columns` causes a visual snap. Instead we scale the
+   composition and fade the chrome to create a smooth transition. */
+
+/* Brand overlay (pre-start) ---------------------------------------
+   Uses opacity transitions instead of display:none so the Begin transition
+   is smooth. Always present in the DOM; visibility toggles via opacity. */
+.brand-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  text-align: left;
+  padding: 2rem;
+  z-index: 5;
+  pointer-events: none;
+  background: linear-gradient(
+    180deg,
+    rgba(26, 29, 36, 0.92) 0%,
+    rgba(26, 29, 36, 0.55) 60%,
+    rgba(26, 29, 36, 0.85) 100%
+  );
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.9s ease, visibility 0s 0.9s;
+}
+
+body.pre-start .brand-overlay {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 0.6s ease, visibility 0s 0s;
+}
+
+.brand-overlay > * { pointer-events: auto; }
+body:not(.pre-start) .brand-overlay > * { pointer-events: none; }
+
+.duration-toggle {
+  display: inline-flex;
+  gap: 0;
+  margin-bottom: 1.5rem;
+  border: 1px solid rgba(212, 165, 116, 0.35);
+  border-radius: 999px;
+  padding: 0.2rem;
+}
+
+.duration-pill {
+  background: transparent;
+  color: var(--text-dim);
+  border: none;
+  padding: 0.5rem 1.1rem;
+  font-family: var(--sans);
+  font-size: 0.85rem;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  border-radius: 999px;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.duration-pill.is-selected {
+  background: var(--accent);
+  color: var(--bg);
+}
+
+.duration-pill:not(.is-selected):hover {
+  color: var(--text);
+}
+
+.safety-line {
+  margin-top: 1.5rem;
+  font-size: 0.82rem;
+  line-height: 1.6;
+  color: var(--text-dim);
+  max-width: 42ch;
+}
+
+.safety-line a {
+  color: var(--accent);
+  text-decoration: underline;
+  text-decoration-color: rgba(212, 165, 116, 0.45);
+  text-underline-offset: 3px;
+}
+
+/* Visual / composition -------------------------------------------- */
+.visual-wrap {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+}
+
+.technique-composition {
+  position: relative;
+  max-width: 90%;
+  max-height: 58vh;
+  width: auto;
+  height: auto;
+  display: none;
+  opacity: 0;
+  /* Pre-start scales the composition outward from its LEFT edge so it grows
+     into the empty middle/right columns (which the brand overlay covers).
+     On Begin, it smoothly shrinks back to its in-progress size. */
+  transform: scale(1);
+  transform-origin: left center;
+  transition: opacity 0.6s ease, transform 1s ease;
+}
+
+body.pre-start .technique-composition {
+  /* 1.6x grows the composition rightward into the middle/right columns
+     for a hero feel without exceeding the active-main's vertical bounds
+     (the active-main has overflow: hidden to catch any remaining spill). */
+  transform: scale(1.6);
+}
+
+@media (max-width: 900px) {
+  body.pre-start .technique-composition {
+    /* On small screens the composition already fills the column; just a
+       gentle scale-up to suggest "hero" without overflowing. */
+    transform: scale(1.05);
+    transform-origin: center center;
+  }
+}
+
+.technique-composition .body-image {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 58vh;
+  object-fit: contain;
+  border-radius: 6px;
+  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.45);
+}
+
+.technique-composition .hand-wrap {
+  position: absolute;
+  transform: translate(-50%, -50%) rotate(var(--mb-rotation, 0deg));
+  pointer-events: none;
+  will-change: transform, opacity;
+  /* Hands fade in only after Begin, with a delay so the body image has time
+     to settle into its final size first. */
+  opacity: 1;
+  transition: opacity 0.8s ease 1s;
+}
+
+/* Hide hand overlays entirely during pre-start so only the body image shows. */
+body.pre-start .technique-composition .hand-wrap {
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.technique-composition .hand-wrap img.hand,
+.technique-composition .hand-wrap img.hand-a,
+.technique-composition .hand-wrap img.hand-b {
+  width: 100%;
+  height: auto;
+  display: block;
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.35));
+}
+
+.visual-wrap.has-composition .technique-composition {
+  display: block;
+  opacity: 1;
+}
+
+.technique-composition.composition-missing {
+  display: none;
+}
+
+.technique-image {
+  display: none;
+  max-width: 90%;
+  max-height: 58vh;
+  width: auto;
+  height: auto;
+  border-radius: 6px;
+  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.45);
+  object-fit: contain;
+  opacity: 0;
+  transition: opacity 0.6s ease;
+}
+
+.visual-wrap.has-image .technique-image {
+  display: block;
+  opacity: 1;
+}
+
+.silhouette {
+  width: 100%;
+  max-width: 200px;
+  height: auto;
+  max-height: 65vh;
+  transition: opacity 0.4s ease;
+}
+
+.visual-wrap.has-image .silhouette,
+.visual-wrap.has-composition .silhouette {
+  display: none;
+}
+
+.visual-wrap.has-composition .technique-image {
+  display: none;
+}
+
+.body-base ellipse,
+.body-base rect,
+.body-base path {
+  fill: var(--bg-soft);
+  stroke: rgba(240, 230, 214, 0.1);
+  stroke-width: 1;
+}
+
+.highlights ellipse,
+.highlights rect,
+.highlights path {
+  fill: var(--accent);
+  opacity: 0;
+  transition: opacity 0.8s ease;
+}
+
+.highlights .active-region {
+  opacity: 0.7;
+}
+
+/* Instruction block ----- */
+.instruction-wrap {
+  text-align: center;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.region-label {
+  font-size: 0.85rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 1rem;
+  font-weight: 600;
+}
+
+.technique-name {
+  font-family: var(--serif);
+  font-weight: 500;
+  font-size: clamp(2rem, 4vw, 3.25rem);
+  line-height: 1.1;
+  margin-bottom: 1.25rem;
+  color: var(--text);
+  letter-spacing: -0.005em;
+}
+
+.technique-description {
+  font-size: 1.02rem;
+  line-height: 1.7;
+  color: var(--text-dim);
+  font-weight: 400;
+  max-width: 52ch;
+  margin: 0 auto;
+}
+
+/* Timer (simple countdown) ----- */
+.timer-wrap {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  text-align: left;
+  gap: 0.4rem;
+}
+
+.time-big {
+  font-family: var(--serif);
+  font-size: 2.5rem;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  color: var(--text);
+  line-height: 1;
+}
+
+.time-label {
+  font-size: 0.7rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+
+/* Controls — bigger, labeled, oily-hand-friendly ----- */
+.controls {
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  display: flex;
+  gap: 0.5rem;
+  z-index: 40;
+}
+
+.ctrl-btn {
+  width: 64px;
+  height: 64px;
+  background: rgba(35, 39, 48, 0.92);
+  border: 1px solid rgba(212, 165, 116, 0.35);
+  color: var(--accent);
+  cursor: pointer;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  transition: background 0.2s ease, border-color 0.2s ease, transform 0.1s ease;
+  padding: 0;
+  font-family: var(--sans);
+}
+
+.ctrl-btn:hover {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+}
+
+.ctrl-btn:active {
+  transform: scale(0.95);
+}
+
+.ctrl-icon {
+  font-size: 1.5rem;
+  line-height: 1;
+}
+
+.ctrl-label {
+  font-size: 0.62rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  font-weight: 500;
+}
+
+/* Floating "Support this site" button ----- */
+#donate-btn {
+  position: fixed;
+  bottom: 5rem;
+  right: 1.5rem;
+  background: var(--accent);
+  color: var(--bg);
+  text-decoration: none;
+  padding: 0.55rem 1.1rem;
+  border-radius: 999px;
+  font-family: var(--sans);
+  font-size: 0.82rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+  transition: background 0.2s ease, transform 0.2s ease;
+  z-index: 60;
+}
+
+#donate-btn:hover {
+  background: #c79661;
+  transform: translateY(-1px);
+}
+
+/* Hide donate button during active massage AND on complete screen */
+body:not(.pre-start) #donate-btn,
+#complete-screen.active ~ #donate-btn,
+#donate-btn.hidden-by-setting {
+  display: none;
+}
+
+/* Settings popover (still anchored top-right under the gear) ----- */
+#settings-popover {
+  position: absolute;
+  top: 4.25rem;
+  right: 1.25rem;
+  background: rgba(20, 22, 28, 0.97);
+  border: 1px solid rgba(212, 165, 116, 0.35);
+  border-radius: 10px;
+  padding: 0.85rem 1rem;
+  min-width: 260px;
+  max-width: calc(100vw - 2.5rem);
+  max-height: calc(100vh - 6rem);
+  overflow-y: auto;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.55);
+  z-index: 51;
+  color: var(--text);
+  font-size: 0.9rem;
+}
+
+#settings-popover label {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.4rem 0;
+  cursor: pointer;
+  font-weight: 400;
+}
+
+#settings-popover input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--accent);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+#settings-popover .setting-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0;
+  font-weight: 400;
+}
+
+#settings-popover .setting-label {
+  font-size: 0.88rem;
+  color: var(--text);
+}
+
+#settings-popover .tone-select {
+  background: rgba(0, 0, 0, 0.45);
+  border: 1px solid rgba(212, 165, 116, 0.35);
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 0.82rem;
+  padding: 0.35rem 0.5rem;
+  border-radius: 4px;
+  cursor: pointer;
+  min-width: 110px;
+}
+
+#settings-popover .tone-select:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+#settings-popover .tone-select option {
+  background: var(--bg);
+  color: var(--text);
+}
+
+.settings-revert-btn {
+  display: block;
+  width: 100%;
+  margin-top: 0.75rem;
+  padding: 0.5rem;
+  background: transparent;
+  border: 1px solid rgba(212, 165, 116, 0.35);
+  color: var(--accent);
+  border-radius: 6px;
+  cursor: pointer;
+  font-family: var(--sans);
+  font-size: 0.78rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.settings-revert-btn:hover {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+}
+
+/* "Hand animations off" — kill motion keyframes ----- */
+body.mb-no-anim .motion-circle img.hand,
+body.mb-no-anim .motion-travel img.hand,
+body.mb-no-anim .motion-compression img.hand,
+body.mb-no-anim .motion-swap img.hand-a,
+body.mb-no-anim .motion-swap img.hand-b,
+body.mb-no-anim .hand-wrap.vis-group-a,
+body.mb-no-anim .hand-wrap.vis-group-b {
+  animation: none !important;
+}
+body.mb-no-anim .motion-swap img.hand-b,
+body.mb-no-anim .hand-wrap.vis-group-b {
+  opacity: 0;
+}
+
+/* First-visit disclaimer modal — slim version --------------------- */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  background: rgba(0, 0, 0, 0.78);
+  animation: modal-fade-in 0.4s ease-out;
+}
+
+.modal-overlay.active {
+  display: flex;
+}
+
+@keyframes modal-fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.modal-card {
+  background: var(--bg);
+  border: 1px solid rgba(212, 165, 116, 0.3);
+  border-radius: 10px;
+  max-width: 480px;
+  width: 100%;
+  max-height: 92vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+}
+
+.modal-title {
+  font-family: var(--serif);
+  font-weight: 500;
+  font-size: clamp(1.5rem, 4vw, 1.9rem);
+  color: var(--text);
+  padding: 1.5rem 1.75rem 0.25rem;
+  margin: 0;
+  letter-spacing: -0.005em;
+}
+
+.modal-body {
+  padding: 0.5rem 1.75rem 1.25rem;
+  overflow-y: auto;
+  color: var(--text);
+  font-weight: 400;
+  line-height: 1.65;
+}
+
+.modal-lede {
+  font-size: 1rem;
+  margin: 0 0 1rem;
+}
+
+.modal-extra {
+  font-size: 0.9rem;
+  color: var(--text-dim);
+  margin: 0;
+}
+
+.modal-body a {
+  color: var(--accent);
+  text-decoration: underline;
+  text-decoration-color: rgba(212, 165, 116, 0.45);
+  text-underline-offset: 3px;
+}
+
+.modal-body strong {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.modal-footer {
+  padding: 1rem 1.75rem 1.5rem;
+  border-top: 1px solid rgba(240, 230, 214, 0.06);
+  display: flex;
+  justify-content: center;
+}
+
+.modal-footer .primary-btn {
+  padding: 0.85rem 1.75rem;
+}
+
+@media (max-width: 640px) {
+  .modal-title { padding: 1.25rem 1.25rem 0.25rem; }
+  .modal-body  { padding: 0.5rem 1.25rem 1rem; }
+  .modal-footer { padding: 1rem 1.25rem 1.25rem; }
+}
+
+/* Site footer ------------------------------------------------------ */
+#massage-screen .site-footer,
+#complete-screen .site-footer {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  z-index: 4;
+}
+
+/* Debug panel (live-tuning).
+   Hidden by default; debug.js shows it when ?debug=1. ----- */
+.debug-panel {
+  display: none;
+  position: fixed;
+  bottom: 1rem;
+  left: 1rem;
+  z-index: 200;
+  width: 280px;
+  background: rgba(20, 22, 28, 0.95);
+  border: 1px solid rgba(212, 165, 116, 0.35);
+  border-radius: 8px;
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 0.78rem;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+}
+
+.debug-panel .dbg-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid rgba(240, 230, 214, 0.08);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--accent);
+  font-size: 0.7rem;
+}
+
+.debug-panel .dbg-toggle-btn {
+  background: transparent;
+  border: 1px solid rgba(212, 165, 116, 0.4);
+  color: var(--accent);
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  line-height: 1;
+}
+
+.debug-panel.collapsed .dbg-body {
+  display: none;
+}
+
+.debug-panel .dbg-body {
+  padding: 0.5rem 0.75rem 0.75rem;
+}
+
+.debug-panel .dbg-row {
+  display: grid;
+  grid-template-columns: 5.5rem 1fr 1fr;
+  align-items: center;
+  gap: 0.4rem;
+  margin-bottom: 0.45rem;
+}
+
+.debug-panel .dbg-row label {
+  color: var(--text-dim);
+  font-size: 0.72rem;
+}
+
+.debug-panel .dbg-num {
+  display: flex;
+  align-items: stretch;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(240, 230, 214, 0.15);
+  border-radius: 4px;
+  overflow: hidden;
+  min-width: 0;
+}
+
+.debug-panel .dbg-num:focus-within {
+  border-color: var(--accent);
+}
+
+.debug-panel input[type="number"] {
+  flex: 1;
+  min-width: 0;
+  background: transparent;
+  border: none;
+  color: var(--text);
+  font-family: var(--sans);
+  font-variant-numeric: tabular-nums;
+  font-size: 0.78rem;
+  padding: 0.25rem 0.2rem;
+  text-align: center;
+  -moz-appearance: textfield;
+}
+.debug-panel input[type="number"]::-webkit-outer-spin-button,
+.debug-panel input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.debug-panel input[type="number"]:focus {
+  outline: none;
+}
+
+.debug-panel .dbg-step {
+  background: rgba(0, 0, 0, 0.35);
+  border: none;
+  color: var(--accent);
+  width: 20px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  line-height: 1;
+  user-select: none;
+  font-family: var(--sans);
+  padding: 0;
+}
+.debug-panel .dbg-step:hover {
+  background: var(--accent-soft);
+}
+.debug-panel .dbg-step:active {
+  background: rgba(212, 165, 116, 0.3);
+}
+
+.debug-panel .dbg-buttons {
+  display: flex;
+  grid-template-columns: none;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+  margin-bottom: 0;
+}
+
+.debug-panel .dbg-btn {
+  flex: 1;
+  background: transparent;
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  padding: 0.5rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-family: var(--sans);
+  font-size: 0.72rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+.debug-panel .dbg-btn:hover {
+  background: var(--accent-soft);
+}
+
+/* Transition flash on technique change ----- */
+.flash-overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--accent);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s ease;
+  z-index: 100;
+}
+
+.flash-overlay.flashing {
+  opacity: 0.06;
+}
+
+/* Responsive --------------------------------------------------- */
+@media (max-width: 900px) {
+  #massage-screen {
+    padding: 1rem 1.25rem;
+  }
+  .active-main {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr auto;
+    gap: 1rem;
+  }
+  body.pre-start .active-main {
+    grid-template-rows: 1fr;
+  }
+  .visual-wrap {
+    height: auto;
+  }
+  .silhouette {
+    max-height: 200px;
+    max-width: 120px;
+  }
+  .technique-image {
+    max-height: 36vh;
+    max-width: 90%;
+  }
+  body.pre-start .technique-composition {
+    max-height: 60vh;
+    max-width: 90%;
+  }
+  .technique-name {
+    font-size: clamp(1.75rem, 6vw, 2.5rem);
+  }
+  .technique-description {
+    font-size: 0.95rem;
+  }
+  .time-big {
+    font-size: 2rem;
+  }
+  .brand-overlay {
+    align-items: center;
+    text-align: center;
+  }
+  .brand {
+    text-align: center;
+  }
+  .tagline {
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .safety-line {
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .ctrl-btn {
+    width: 56px;
+    height: 56px;
+  }
+  .ctrl-icon {
+    font-size: 1.3rem;
+  }
+  .controls {
+    bottom: 1rem;
+    right: 1rem;
+  }
+}

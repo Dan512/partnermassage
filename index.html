@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PartnerMassage · A guided amateur massage for couples</title>
+  <meta name="description" content="A calm, no-ads, guided amateur massage you can give your partner tonight. Step-by-step techniques, painterly illustrations, gentle timing — no accounts, no tracking." />
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="animations.css" />
+  <link rel="stylesheet" href="page.css" />
+</head>
+<body class="pre-start">
+
+  <!-- MASSAGE SCREEN — same canvas for pre-start (brand overlay) and in-progress (chrome).
+       The painterly composition is always live; pressing Begin just swaps the overlay. -->
+  <section id="massage-screen" class="screen active">
+    <header class="top-bar">
+      <span id="step-counter" class="counter fade-in-on-begin">Step 1 of 15</span>
+      <div class="top-bar-right">
+        <button id="body-tone-btn" class="tone-toggle" type="button" title="Cycle body skin tone">Body: Medium</button>
+        <button id="hand-tone-btn" class="tone-toggle" type="button" title="Cycle hand skin tone">Hands: Medium</button>
+        <button id="gender-toggle" class="gender-toggle" type="button" title="Toggle recipient body type" aria-label="Toggle recipient body type">♀</button>
+        <button id="settings-toggle" class="pre-start-only" type="button" title="Settings" aria-label="Settings">⚙</button>
+        <span id="total-remaining" class="counter fade-in-on-begin">Remaining 60:00</span>
+      </div>
+    </header>
+
+    <main class="active-main">
+      <div id="visual-wrap" class="visual-wrap" aria-hidden="true">
+        <!-- Painterly composition: body image + animated hand overlays from techniques.js.
+             Rendered on page load showing technique 1 so the start screen IS the first technique. -->
+        <div id="technique-composition" class="technique-composition"></div>
+        <!-- Legacy fallbacks (only visible if composition fails) -->
+        <img id="technique-image" class="technique-image" alt="" />
+        <svg id="silhouette" class="silhouette" viewBox="0 0 200 500" xmlns="http://www.w3.org/2000/svg">
+          <g class="body-base">
+            <ellipse cx="100" cy="40" rx="28" ry="32"/>
+            <rect x="88" y="68" width="24" height="14" rx="4"/>
+            <path d="M55,90 Q60,82 75,80 L125,80 Q140,82 145,90 L150,200 Q150,230 140,260 L60,260 Q50,230 50,200 Z"/>
+            <path d="M55,95 Q40,110 36,160 Q34,200 38,240 L52,240 Q56,200 58,160 Q60,120 65,100 Z"/>
+            <path d="M145,95 Q160,110 164,160 Q166,200 162,240 L148,240 Q144,200 142,160 Q140,120 135,100 Z"/>
+            <path d="M58,258 Q55,275 60,295 L140,295 Q145,275 142,258 Z"/>
+            <path d="M100,295 L100,470 L118,470 Q124,400 122,340 Q120,310 115,295 Z"/>
+            <path d="M100,295 L100,470 L82,470 Q76,400 78,340 Q80,310 85,295 Z"/>
+            <ellipse cx="91" cy="478" rx="11" ry="8"/>
+            <ellipse cx="109" cy="478" rx="11" ry="8"/>
+          </g>
+          <g class="highlights">
+            <ellipse data-region="scalp" cx="100" cy="32" rx="28" ry="24"/>
+            <rect data-region="neck" x="86" y="64" width="28" height="20" rx="6"/>
+          </g>
+        </svg>
+      </div>
+
+      <!-- Active-mode chrome — fades in after Begin -->
+      <div class="instruction-wrap fade-in-on-begin">
+        <p id="region-label" class="region-label">SCALP</p>
+        <h2 id="technique-name" class="technique-name">Circular Fingertip Pressure</h2>
+        <p id="technique-description" class="technique-description">Description loads here.</p>
+      </div>
+
+      <div class="timer-wrap fade-in-on-begin">
+        <span id="technique-time" class="time-big">4:00</span>
+        <span class="time-label">this technique</span>
+      </div>
+
+      <!-- Brand overlay — opacity-toggled by body.pre-start (no display: none) -->
+      <div class="brand-overlay">
+        <h1 class="brand">PartnerMassage</h1>
+        <p class="tagline">A guided amateur massage you can give your partner tonight.</p>
+
+        <div class="duration-toggle" role="group" aria-label="Massage length">
+          <button id="duration-30" type="button" class="duration-pill">30 min</button>
+          <button id="duration-60" type="button" class="duration-pill is-selected">60 min</button>
+        </div>
+
+        <button id="begin-btn" class="primary-btn">Begin Massage</button>
+
+        <p class="safety-line">
+          By beginning you confirm you've read the
+          <a href="disclaimer.html">safety notice</a>.
+          Stop if anything feels wrong.
+        </p>
+      </div>
+    </main>
+
+    <!-- Controls — fade in after Begin -->
+    <div id="controls" class="controls fade-in-on-begin">
+      <button id="prev-btn" class="ctrl-btn" type="button" title="Previous technique (←)" aria-label="Previous technique">
+        <span class="ctrl-icon" aria-hidden="true">‹</span>
+        <span class="ctrl-label">Back</span>
+      </button>
+      <button id="pause-btn" class="ctrl-btn" type="button" title="Pause (Space)" aria-label="Pause">
+        <span class="ctrl-icon" aria-hidden="true">⏸</span>
+        <span class="ctrl-label">Pause</span>
+      </button>
+      <button id="next-btn" class="ctrl-btn" type="button" title="Next technique (→)" aria-label="Next technique">
+        <span class="ctrl-icon" aria-hidden="true">›</span>
+        <span class="ctrl-label">Next</span>
+      </button>
+    </div>
+
+    <!-- Settings popover (visible only pre-start) -->
+    <div id="settings-popover" class="pre-start-only" hidden>
+      <label><input type="checkbox" data-setting="playSound" checked /> Play sound on technique change</label>
+      <label><input type="checkbox" data-setting="handAnimations" checked /> Show hand animations</label>
+      <label><input type="checkbox" data-setting="showSupportBtn" checked /> Show support link</label>
+
+      <div class="setting-row">
+        <span class="setting-label">Body skin tone</span>
+        <select id="body-tone-select" class="tone-select">
+          <option value="lighter">Lighter</option>
+          <option value="medium">Medium</option>
+          <option value="darker">Darker</option>
+        </select>
+      </div>
+      <div class="setting-row">
+        <span class="setting-label">Hands skin tone</span>
+        <select id="hand-tone-select" class="tone-select">
+          <option value="lighter">Lighter</option>
+          <option value="medium">Medium</option>
+          <option value="darker">Darker</option>
+        </select>
+      </div>
+
+      <button id="settings-revert" class="settings-revert-btn" type="button">Restore Defaults</button>
+    </div>
+
+    <footer class="site-footer pre-start-only">
+      <nav class="site-footer-links">
+        <a href="privacy.html">Privacy</a> ·
+        <a href="disclaimer.html">Safety notice</a> ·
+        <a href="https://ko-fi.com/noadsdude" rel="noopener">Support</a>
+      </nav>
+      <p class="site-footer-tag">No ads. No accounts. Just useful.</p>
+    </footer>
+  </section>
+
+  <!-- COMPLETE SCREEN -->
+  <section id="complete-screen" class="screen">
+    <div class="start-inner">
+      <h1 class="brand">Massage Complete</h1>
+      <p class="tagline">Well done. Let your partner rest as long as they like before getting up.</p>
+      <button id="restart-btn" class="primary-btn">Start Again</button>
+    </div>
+    <footer class="site-footer">
+      <nav class="site-footer-links">
+        <a href="privacy.html">Privacy</a> ·
+        <a href="disclaimer.html">Safety notice</a> ·
+        <a href="https://ko-fi.com/noadsdude" rel="noopener">Support on Ko-fi</a>
+      </nav>
+      <p class="site-footer-tag">No ads. No accounts. Just useful.</p>
+    </footer>
+  </section>
+
+  <!-- Floating support button (hidden during active massage screen + via settings) -->
+  <a id="donate-btn" href="https://ko-fi.com/noadsdude" target="_blank" rel="noopener">Support this site</a>
+
+  <!-- First-visit disclaimer modal (slim version — long form on disclaimer.html) -->
+  <div id="disclaimer-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="disclaimer-title">
+    <div class="modal-card">
+      <h1 id="disclaimer-title" class="modal-title">Before you begin</h1>
+      <div class="modal-body">
+        <p class="modal-lede">
+          PartnerMassage is a friendly guide, not medical advice. Use gentle
+          pressure, ask your partner first, and <strong>stop immediately</strong>
+          if anything hurts. Skip a session if your partner is pregnant,
+          recovering from injury, or has any condition where touch could cause
+          harm.
+        </p>
+        <p class="modal-extra">
+          Please read our <a href="disclaimer.html">safety notice page</a>
+          before getting started.
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button id="disclaimer-accept-btn" class="primary-btn">I understand and agree</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="routine.js"></script>
+  <script src="techniques.js"></script>
+  <script src="compose.js"></script>
+  <script src="settings.js"></script>
+  <script src="script.js"></script>
+  <script src="debug.js"></script>
+</body>
+</html>

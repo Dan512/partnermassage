@@ -1,0 +1,136 @@
+/* Hand motion keyframes — driven by CSS variables set inline per instance.
+   Used by compose.js to animate hand PNGs over body PNGs. */
+
+/* ----- Circle: smooth circular path via double-rotate trick ----- */
+.motion-circle img.hand,
+.motion-circle .hand {
+  animation: mb-circle var(--mb-duration, 2000ms) linear infinite;
+  animation-delay: var(--mb-phase, 0ms);
+}
+@keyframes mb-circle {
+  from { transform: rotate(0deg)   translateX(var(--mb-radius, 14px)) rotate(0deg); }
+  to   { transform: rotate(360deg) translateX(var(--mb-radius, 14px)) rotate(-360deg); }
+}
+
+/* ----- Travel: A → B → A linear glide, with optional motion-angle rotation ----- */
+.motion-travel img.hand,
+.motion-travel .hand {
+  animation: mb-travel var(--mb-duration, 2000ms) ease-in-out infinite alternate;
+  animation-delay: var(--mb-phase, 0ms);
+}
+@keyframes mb-travel {
+  from {
+    transform: rotate(var(--mb-motion-angle, 0deg))
+               translate(0, 0)
+               rotate(calc(-1 * var(--mb-motion-angle, 0deg)));
+  }
+  to {
+    transform: rotate(var(--mb-motion-angle, 0deg))
+               translate(var(--mb-dx, 60px), var(--mb-dy, 0px))
+               rotate(calc(-1 * var(--mb-motion-angle, 0deg)));
+  }
+}
+
+/* ----- Compression: press then release, optionally along an angled axis ----- */
+.motion-compression img.hand,
+.motion-compression .hand {
+  animation: mb-compression var(--mb-duration, 1500ms) ease-in-out infinite;
+  animation-delay: var(--mb-phase, 0ms);
+}
+@keyframes mb-compression {
+  0%, 100% {
+    transform: rotate(var(--mb-motion-angle, 0deg))
+               translate(0, 0)
+               rotate(calc(-1 * var(--mb-motion-angle, 0deg)))
+               scale(1);
+  }
+  50% {
+    transform: rotate(var(--mb-motion-angle, 0deg))
+               translate(0, var(--mb-depth, 10px))
+               rotate(calc(-1 * var(--mb-motion-angle, 0deg)))
+               scale(0.96);
+  }
+}
+
+/* ----- Swap: crossfade between two stacked hand pose images ----- */
+.motion-swap {
+  position: relative;
+}
+.motion-swap img.hand-a,
+.motion-swap img.hand-b {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: auto;
+}
+.motion-swap img.hand-a {
+  animation: mb-swap-a var(--mb-duration, 1500ms) ease-in-out infinite;
+  animation-delay: var(--mb-phase, 0ms);
+}
+.motion-swap img.hand-b {
+  animation: mb-swap-b var(--mb-duration, 1500ms) ease-in-out infinite;
+  animation-delay: var(--mb-phase, 0ms);
+}
+@keyframes mb-swap-a {
+  0%, 35%   { opacity: 1; }
+  50%, 85%  { opacity: 0; }
+  100%      { opacity: 1; }
+}
+@keyframes mb-swap-b {
+  0%, 35%   { opacity: 0; }
+  50%, 85%  { opacity: 1; }
+  100%      { opacity: 0; }
+}
+
+/* ----- Static: no animation ----- */
+.motion-static img.hand,
+.motion-static .hand {
+  /* deliberately blank */
+}
+
+/* ----- Visibility groups (for alternating sets of hands per technique) -----
+   Apply class `vis-group-a` or `vis-group-b` to a hand-wrap and the wrap
+   will fade in/out so that group A is visible for the first half of the
+   visibility cycle and group B for the second half. Pure opacity animation,
+   composes cleanly with the existing motion animations (motion runs on the
+   inner img, visibility runs on the wrap).
+
+   Tune with CSS var `--mb-vis-duration` (default 16000ms total cycle). */
+.technique-composition .hand-wrap.vis-group-a {
+  animation: mb-vis-a var(--mb-vis-duration, 16000ms) ease-in-out infinite;
+}
+.technique-composition .hand-wrap.vis-group-b {
+  animation: mb-vis-b var(--mb-vis-duration, 16000ms) ease-in-out infinite;
+}
+@keyframes mb-vis-a {
+  0%, 42%   { opacity: 1; }
+  50%, 92%  { opacity: 0; }
+  100%      { opacity: 1; }
+}
+@keyframes mb-vis-b {
+  0%, 42%   { opacity: 0; }
+  50%, 92%  { opacity: 1; }
+  100%      { opacity: 0; }
+}
+
+/* Respect reduced-motion preference: collapse animations to first frame */
+@media (prefers-reduced-motion: reduce) {
+  .motion-circle img.hand,
+  .motion-circle .hand,
+  .motion-travel img.hand,
+  .motion-travel .hand,
+  .motion-compression img.hand,
+  .motion-compression .hand,
+  .motion-swap img.hand-a,
+  .motion-swap img.hand-b,
+  .hand-wrap.vis-group-a,
+  .hand-wrap.vis-group-b {
+    animation: none !important;
+  }
+  .motion-swap img.hand-b {
+    opacity: 0;
+  }
+  .hand-wrap.vis-group-b {
+    opacity: 0;
+  }
+}
